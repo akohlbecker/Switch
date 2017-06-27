@@ -22,21 +22,16 @@
 		<Vaadin-Addon>${project.artifactId}-${project.version}.jar</Vaadin-Addon>
 	</properties>
 
-	<organization>
-		<name>Teemu Pöntelin</name>
-		<url>https://github.com/tehapo/switch</url>
-	</organization>
-
 	<scm>
-		<url>git://github.com/tehapo/switch.git</url>
-		<connection>scm:git:git://github.com/tehapo/switch.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com:/tehapo/switch.git</developerConnection>
+		<url>git://github.com/akohlbecker/switch.git</url>
+		<connection>scm:git:git://github.com/akohlbecker/switch.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com:/akohlbecker/switch.git</developerConnection>
 		<tag>Switch add-on for Vaadin 7</tag>
 	</scm>
 
 	<issueManagement>
 		<system>GitHub</system>
-		<url>https://github.com/tehapo/switch/issues</url>
+		<url>https://github.com/akohlbecker/switch/issues</url>
 	</issueManagement>
 
 	<licenses>
@@ -98,6 +93,16 @@
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
+  
+    <distributionManagement>
+      <repository>
+        <uniqueVersion>false</uniqueVersion>
+        <id>wp5.e-taxonomy.eu</id>
+        <name>Edit Maven Repository</name>
+        <url>scpexe://wp5.e-taxonomy.eu/var/www/wp5.e-taxonomy.eu/mavenrepo/</url>
+        <layout>default</layout>
+      </repository>
+    </distributionManagement>
 
 	<build>
 		<plugins>
@@ -202,6 +207,40 @@
 				<directory>src/main/resources</directory>
 			</resource>
 		</resources>
+    
+        <extensions>
+          <extension>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-scm</artifactId>
+            <version>1.0-beta-6</version>
+          </extension>
+          <extension>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-ssh</artifactId>
+            <version>1.0-beta-6</version>
+          </extension>
+          <extension>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-ssh-external</artifactId>
+            <version>1.0-beta-6</version>
+          </extension>
+          <extension>
+            <groupId>org.apache.maven.scm</groupId>
+            <artifactId>maven-scm-manager-plexus</artifactId>
+            <version>1.0</version>
+          </extension>
+          <extension>
+            <groupId>org.apache.maven.scm</groupId>
+            <artifactId>maven-scm-provider-svnexe</artifactId>
+            <version>1.0</version>
+          </extension>
+          <!-- WebDAV plugin to upload snapshots -->
+          <extension>
+            <groupId>org.apache.maven.wagon</groupId>
+            <artifactId>wagon-webdav</artifactId>
+            <version>1.0-beta-2</version>
+          </extension>
+        </extensions>
 		
 	</build>
 
