@@ -38,11 +38,12 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.ui.FocusWidget;
 import com.google.gwt.user.client.ui.HasAnimation;
 import com.google.gwt.user.client.ui.HasValue;
+import com.vaadin.client.ui.FontIcon;
 import com.vaadin.client.ui.Icon;
 
 /**
  * SwitchWidget is the client-side implementation of the Switch component.
- * 
+ *
  * @author Teemu Pöntelin | Vaadin Ltd. | http://vaadin.com/teemu
  */
 public class SwitchWidget extends FocusWidget implements HasValue<Boolean>,
@@ -56,9 +57,14 @@ public class SwitchWidget extends FocusWidget implements HasValue<Boolean>,
     private final int ANIMATION_DURATION_MS = 300;
 
     private Element slider;
+
     private boolean value = true;
     protected com.google.gwt.user.client.Element errorIndicatorElement;
-    protected Icon icon;
+    protected Icon icon = null;
+
+    private FaFontIcon faIconOff = null;
+    private FaFontIcon faIconOn = null;
+
     protected boolean immediate;
 
     private boolean mouseDown;
@@ -67,6 +73,7 @@ public class SwitchWidget extends FocusWidget implements HasValue<Boolean>,
 
     private boolean initialValueSet;
     private boolean animated;
+    private boolean faIconStyle;
     private int tabIndex;
     private List<HandlerRegistration> handlers;
 
@@ -185,8 +192,20 @@ public class SwitchWidget extends FocusWidget implements HasValue<Boolean>,
                 final int targetLeft = (value ? 0 : -getUnvisiblePartWidth());
 
                 if (!isAnimationEnabled() || !initialValueSet) {
-                    slider.getStyle().setProperty("left", targetLeft + "px");
-                    updateStyleName();
+                    if(isFaIconStyleEnabled()){
+                        if(faIconOff == null){
+                            faIconOff = new FaFontIcon(0XF204);
+                            faIconOn = new FaFontIcon(0XF205);
+                            slider.appendChild(faIconOff.getElement());
+                            slider.appendChild(faIconOn.getElement());
+                        }
+                        faIconOff.getElement().getStyle().setProperty("display", value ? "none" : "inline-block");
+                        faIconOn.getElement().getStyle().setProperty("display", value ? "inline-block" : "none" );
+
+                    } else {
+                        slider.getStyle().setProperty("left", targetLeft + "px");
+                        updateStyleName();
+                    }
                 } else {
                     Animation a = new Animation() {
 
@@ -227,6 +246,7 @@ public class SwitchWidget extends FocusWidget implements HasValue<Boolean>,
         }
     }
 
+    @Override
     public void onKeyUp(KeyUpEvent event) {
         if (event.getNativeKeyCode() == 32) {
             // 32 = space bar
@@ -234,6 +254,7 @@ public class SwitchWidget extends FocusWidget implements HasValue<Boolean>,
         }
     }
 
+    @Override
     public void onMouseDown(MouseDownEvent event) {
         handleMouseDown(event.getScreenX());
         event.preventDefault();
@@ -245,6 +266,7 @@ public class SwitchWidget extends FocusWidget implements HasValue<Boolean>,
         dragInfo.setDragStartOffsetLeft(slider.getOffsetLeft());
     }
 
+    @Override
     public void onMouseUp(MouseUpEvent event) {
         handleMouseUp(event.getNativeEvent());
     }
@@ -266,6 +288,7 @@ public class SwitchWidget extends FocusWidget implements HasValue<Boolean>,
         dragInfo.setDragging(false); // not dragging anymore
     }
 
+    @Override
     public void onMouseMove(MouseMoveEvent event) {
         handleMouseMove(event.getScreenX());
     }
@@ -281,56 +304,103 @@ public class SwitchWidget extends FocusWidget implements HasValue<Boolean>,
 
             if (dragInfo.isDragging()) {
                 int dragDistance = dragInfo.getDragDistanceX(clientX);
-
-                // calculate new left position and
-                // check for boundaries
                 int left = dragInfo.getDragStartOffsetLeft() + dragDistance;
-                if (left < -getUnvisiblePartWidth()) {
-                    left = -getUnvisiblePartWidth();
-                } else if (left > 0) {
-                    left = 0;
-                }
 
-                // set the CSS left
-                slider.getStyle().setProperty("left", left + "px");
+                if(isFaIconStyleEnabled()){
+
+                    faIconOff.getElement().getStyle().setProperty("display", "inline-block");
+                    faIconOn.getElement().getStyle().setProperty("display", "inline-block");
+
+                    double magnification = 2;
+                    int width = this.getElement().getClientWidth();
+                    double opacity = Math.abs(dragDistance) / (width * magnification);
+                    boolean onDirection = dragDistance > 0;
+                    double opacityOn = onDirection ? opacity : 1 - opacity;
+                    double opacityOff = !onDirection ? opacity : 1 - opacity;
+                    faIconOff.getElement().getStyle().setProperty("opacity", Double.toString(opacityOn));
+                    faIconOn.getElement().getStyle().setProperty("opacity", Double.toString(opacityOff));
+
+                } else {
+                    // calculate new left position and
+                    // check for boundaries
+                    if (left < -getUnvisiblePartWidth()) {
+                        left = -getUnvisiblePartWidth();
+                    } else if (left > 0) {
+                        left = 0;
+                    }
+                    // set the CSS left
+                    slider.getStyle().setProperty("left", left + "px");
+                }
             }
         }
     }
 
+    @Override
     public void onFocus(FocusEvent event) {
         addStyleDependentName("focus");
     }
 
+    @Override
     public void onBlur(BlurEvent event) {
         removeStyleDependentName("focus");
     }
 
+    @Override
     public boolean isAnimationEnabled() {
         return animated;
     }
 
+    @Override
     public void setAnimationEnabled(boolean enable) {
         animated = enable;
     }
 
+    @Override
     public void onTouchCancel(TouchCancelEvent event) {
         handleMouseUp(event.getNativeEvent());
     }
 
+    @Override
     public void onTouchMove(TouchMoveEvent event) {
         Touch touch = event.getTouches().get(0).cast();
         handleMouseMove(touch.getPageX());
         event.preventDefault();
     }
 
+    @Override
     public void onTouchEnd(TouchEndEvent event) {
         handleMouseUp(event.getNativeEvent());
     }
 
+    @Override
     public void onTouchStart(TouchStartEvent event) {
         Touch touch = event.getTouches().get(0).cast();
         handleMouseDown(touch.getPageX());
         event.preventDefault();
+    }
+
+    public void setFaIconStyle(boolean faIconStyle) {
+        boolean refreshUI = this.faIconStyle != faIconStyle;
+        this.faIconStyle = faIconStyle;
+        if(refreshUI){
+            updateVisibleState();
+        }
+
+    }
+
+    public boolean isFaIconStyleEnabled(){
+        return faIconStyle;
+    }
+
+    class FaFontIcon extends FontIcon {
+
+        public FaFontIcon(int codepoint) {
+            super();
+            setCodepoint(codepoint);
+            setFontFamily("FontAwesome");
+
+        }
+
     }
 
 }

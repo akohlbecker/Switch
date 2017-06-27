@@ -48,6 +48,7 @@ public class SwitchComponentDemo extends UI implements
         content.addComponent(createDemoPanel(null));
         content.addComponent(createDemoPanel("compact"));
         content.addComponent(createDemoPanel("holodeck"));
+        content.addComponent(createDemoPanel("faIcon"));
     }
 
     private Label createDescription() {
@@ -86,25 +87,27 @@ public class SwitchComponentDemo extends UI implements
             demoLayout.addComponent(checkBox, 0, 0, 5, 0);
         }
 
-        Switch plainSwitch = createSwitch("Switch 1", switchStyle, true);
+        boolean faIconStyle = switchStyle != null && switchStyle.equals("faIcon");
+
+        Switch plainSwitch = createSwitch("Switch 1", switchStyle, true, faIconStyle);
         demoLayout.addComponent(plainSwitch);
 
-        Switch plainSwitch2 = createSwitch("Switch 2", switchStyle, false);
+        Switch plainSwitch2 = createSwitch("Switch 2", switchStyle, false, faIconStyle);
         demoLayout.addComponent(plainSwitch2);
 
-        Switch disabledSwitch = createSwitch("Disabled", switchStyle, true);
+        Switch disabledSwitch = createSwitch("Disabled", switchStyle, true, faIconStyle);
         disabledSwitch.setEnabled(false);
         demoLayout.addComponent(disabledSwitch);
 
-        Switch readOnlySwitch = createSwitch("Read-only", switchStyle, true);
+        Switch readOnlySwitch = createSwitch("Read-only", switchStyle, true, faIconStyle);
         readOnlySwitch.setReadOnly(true);
         demoLayout.addComponent(readOnlySwitch);
 
-        Switch readOnlySwitch2 = createSwitch("Read-only", switchStyle, false);
+        Switch readOnlySwitch2 = createSwitch("Read-only", switchStyle, false, faIconStyle);
         readOnlySwitch2.setReadOnly(true);
         demoLayout.addComponent(readOnlySwitch2);
 
-        Switch validatorSwitch = createSwitch("Validator", switchStyle, true);
+        Switch validatorSwitch = createSwitch("Validator", switchStyle, true, faIconStyle);
         validatorSwitch.addValidator(new AbstractValidator<Boolean>(
                 "Only ON is valid!") {
             @Override
@@ -122,17 +125,19 @@ public class SwitchComponentDemo extends UI implements
     }
 
     private Switch createSwitch(String caption, String style,
-            boolean initialState) {
+            boolean initialState, boolean useFaIconStyle) {
         Switch switchComponent = new Switch(caption, initialState);
         switchComponent.addValueChangeListener(this);
         switchComponent.setImmediate(true);
         if (style != null) {
             switchComponent.setStyleName(style);
         }
+        switchComponent.setFaIconStyle(useFaIconStyle);
         allSwitches.add(switchComponent);
         return switchComponent;
     }
 
+    @Override
     public void valueChange(ValueChangeEvent event) {
         if (event.getProperty() == checkBox) {
             for (Switch s : allSwitches) {

@@ -72,3 +72,27 @@
 .v-switch-holodeck.on .v-switch-slider:after {
 	content: "ON";
 }
+
+/** Overriding styles for "faIcon" style. */
+.v-switch-faIcon {
+    width: 58px;
+    border: 0px none;
+    height: 1em;
+    width: 2em;
+}
+.v-switch-faIcon .v-switch-slider {
+    background: none;
+    width: 2em;   
+}
+
+.v-switch-faIcon .v-switch-slider {
+    position: relative;
+    background: none;
+    width: 2em;   
+}
+
+.v-switch-faIcon .v-switch-slider .v-icon {
+   position: absolute;
+   top: 0px;
+   left: 0px;
+} 
