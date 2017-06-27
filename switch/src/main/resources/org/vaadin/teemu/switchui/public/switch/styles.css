@@ -73,25 +73,24 @@
 	content: "ON";
 }
 
-/** Overriding styles for "faIcon" style. */
-.v-switch-faIcon {
-    width: 58px;
+/** Overriding styles for "icon" style. */
+.v-switch-icon { 
     border: 0px none;
     height: 1em;
     width: 2em;
 }
-.v-switch-faIcon .v-switch-slider {
+.v-switch-icon .v-switch-slider {
     background: none;
     width: 2em;   
 }
 
-.v-switch-faIcon .v-switch-slider {
+.v-switch-icon .v-switch-slider {
     position: relative;
     background: none;
     width: 2em;   
 }
 
-.v-switch-faIcon .v-switch-slider .v-icon {
+.v-switch-icon .v-switch-slider .v-icon {
    position: absolute;
    top: 0px;
    left: 0px;

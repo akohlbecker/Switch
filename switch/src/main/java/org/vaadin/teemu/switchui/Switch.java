@@ -18,7 +18,7 @@ public class Switch extends CheckBox {
     /**
      *
      */
-    private static final String FA_ICON_STYLE_NAME = "faIcon";
+    public static final String ICON_STYLE = "icon";
 
     public Switch() {
         super();
@@ -48,18 +48,6 @@ public class Switch extends CheckBox {
     public void setAnimationEnabled(boolean enabled) {
         if (getState().animated != enabled) {
             getState().animated = enabled;
-        }
-    }
-
-    public void setFaIconStyle(boolean enabled) {
-        if (getState().faIconStyle != enabled) {
-            getState().faIconStyle = enabled;
-        }
-        if(getState().faIconStyle && getState().animated){
-            getState().animated = false;
-        }
-        if(enabled){
-            setStyleName(FA_ICON_STYLE_NAME);
         }
     }
 

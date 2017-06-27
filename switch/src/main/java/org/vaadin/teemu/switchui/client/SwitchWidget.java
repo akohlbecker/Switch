@@ -192,12 +192,14 @@ public class SwitchWidget extends FocusWidget implements HasValue<Boolean>,
                 final int targetLeft = (value ? 0 : -getUnvisiblePartWidth());
 
                 if (!isAnimationEnabled() || !initialValueSet) {
-                    if(isFaIconStyleEnabled()){
+                    if(isIconStyleEnabled()){
                         if(faIconOff == null){
+                            // initialize the icon style mode
                             faIconOff = new FaFontIcon(0XF204);
                             faIconOn = new FaFontIcon(0XF205);
                             slider.appendChild(faIconOff.getElement());
                             slider.appendChild(faIconOn.getElement());
+
                         }
                         faIconOff.getElement().getStyle().setProperty("display", value ? "none" : "inline-block");
                         faIconOn.getElement().getStyle().setProperty("display", value ? "inline-block" : "none" );
@@ -304,17 +306,20 @@ public class SwitchWidget extends FocusWidget implements HasValue<Boolean>,
 
             if (dragInfo.isDragging()) {
                 int dragDistance = dragInfo.getDragDistanceX(clientX);
-                int left = dragInfo.getDragStartOffsetLeft() + dragDistance;
 
-                if(isFaIconStyleEnabled()){
+                if(isIconStyleEnabled()){
 
                     faIconOff.getElement().getStyle().setProperty("display", "inline-block");
                     faIconOn.getElement().getStyle().setProperty("display", "inline-block");
 
-                    double magnification = 2;
                     int width = this.getElement().getClientWidth();
-                    double opacity = Math.abs(dragDistance) / (width * magnification);
-                    boolean onDirection = dragDistance > 0;
+                    double dragArea = width * 2;
+                    double dragval =  Math.abs(dragDistance);
+                    if(dragval > dragArea){
+                        dragval = dragArea;
+                    }
+                    double opacity = dragval / dragArea;
+                    boolean onDirection = dragval > 0;
                     double opacityOn = onDirection ? opacity : 1 - opacity;
                     double opacityOff = !onDirection ? opacity : 1 - opacity;
                     faIconOff.getElement().getStyle().setProperty("opacity", Double.toString(opacityOn));
@@ -323,6 +328,7 @@ public class SwitchWidget extends FocusWidget implements HasValue<Boolean>,
                 } else {
                     // calculate new left position and
                     // check for boundaries
+                    int left = dragInfo.getDragStartOffsetLeft() + dragDistance;
                     if (left < -getUnvisiblePartWidth()) {
                         left = -getUnvisiblePartWidth();
                     } else if (left > 0) {
@@ -379,7 +385,7 @@ public class SwitchWidget extends FocusWidget implements HasValue<Boolean>,
         event.preventDefault();
     }
 
-    public void setFaIconStyle(boolean faIconStyle) {
+    public void setIconStyleEnabled(boolean faIconStyle) {
         boolean refreshUI = this.faIconStyle != faIconStyle;
         this.faIconStyle = faIconStyle;
         if(refreshUI){
@@ -388,7 +394,7 @@ public class SwitchWidget extends FocusWidget implements HasValue<Boolean>,
 
     }
 
-    public boolean isFaIconStyleEnabled(){
+    public boolean isIconStyleEnabled(){
         return faIconStyle;
     }
 
